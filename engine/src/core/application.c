@@ -6,6 +6,7 @@
 #include "platform/platform.h"
 #include "core/mem.h"
 #include "core/event.h"
+#include "core/input.h"
 
 typedef struct application_state {
     game* game_inst;
@@ -30,6 +31,7 @@ b8 application_create(game* game_inst) {
 
     // Initialize subsystems.
     initialize_logging();
+    input_initialize();
 
     app_state.is_running = TRUE;
     app_state.is_suspended = FALSE;
@@ -83,12 +85,15 @@ b8 application_run() {
                 app_state.is_running = FALSE;
                 break;
             }
+
+            input_update(0);
         }
     }
 
     app_state.is_running = FALSE;
 
     event_shutdown();
+    input_shutdown();
 
     platform_shutdown(&app_state.platform);
 
