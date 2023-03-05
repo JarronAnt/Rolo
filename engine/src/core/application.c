@@ -1,9 +1,11 @@
 #include "application.h"
 #include "game_types.h"
-#include "core/mem.h"
+
 #include "logger.h"
 
 #include "platform/platform.h"
+#include "core/mem.h"
+#include "core/event.h"
 
 typedef struct application_state {
     game* game_inst;
@@ -29,16 +31,13 @@ b8 application_create(game* game_inst) {
     // Initialize subsystems.
     initialize_logging();
 
-    // TODO: Remove this
-    KFATAL("A test message: %f", 3.14f);
-    KERROR("A test message: %f", 3.14f);
-    KWARN("A test message: %f", 3.14f);
-    KINFO("A test message: %f", 3.14f);
-    KDEBUG("A test message: %f", 3.14f);
-    KTRACE("A test message: %f", 3.14f);
-
     app_state.is_running = TRUE;
     app_state.is_suspended = FALSE;
+
+    if(!event_initialize()) {
+        KERROR("Event system failed initialization. Application cannot continue.");
+        return FALSE;
+    }
 
     if (!platform_startup(
             &app_state.platform,
@@ -65,12 +64,13 @@ b8 application_create(game* game_inst) {
 
 b8 application_run() {
     KINFO(get_memory_usage_str());
+
     while (app_state.is_running) {
-        if(!platform_pump_messages(&app_state.platform)) {
+        if (!platform_pump_messages(&app_state.platform)) {
             app_state.is_running = FALSE;
         }
 
-        if(!app_state.is_suspended) {
+        if (!app_state.is_suspended) {
             if (!app_state.game_inst->update(app_state.game_inst, (f32)0)) {
                 KFATAL("Game update failed, shutting down.");
                 app_state.is_running = FALSE;
@@ -87,6 +87,8 @@ b8 application_run() {
     }
 
     app_state.is_running = FALSE;
+
+    event_shutdown();
 
     platform_shutdown(&app_state.platform);
 
