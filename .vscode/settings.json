@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "platform.h": "c"
-    }
+        "platform.h": "c",
+        "string.h": "c"
+    },
+    "cmake.configureOnOpen": false
 }
