@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "platform.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "darray.h": "c"
     },
     "cmake.configureOnOpen": false
 }

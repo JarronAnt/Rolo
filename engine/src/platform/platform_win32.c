@@ -6,6 +6,7 @@
 #include "core/logger.h"
 #include "core/input.h"
 
+#include "containers/darray.h"
 #include <windows.h>
 #include <windowsx.h>  // param input extraction
 #include <stdlib.h>
@@ -45,7 +46,7 @@ b8 platform_startup(
     wc.hIcon = icon;
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);  // NULL; // Manage the cursor manually
     wc.hbrBackground = NULL;                   // Transparent
-    wc.lpszClassName = "kohi_window_class";
+    wc.lpszClassName = "eclipse_window_class";
 
     if (!RegisterClassA(&wc)) {
         MessageBoxA(0, "Window registration failed", "Error", MB_ICONEXCLAMATION | MB_OK);
@@ -83,7 +84,7 @@ b8 platform_startup(
     window_height += border_rect.bottom - border_rect.top;
 
     HWND handle = CreateWindowExA(
-        window_ex_style, "kohi_window_class", application_name,
+        window_ex_style, "eclipse_window_class", application_name,
         window_style, window_x, window_y, window_width, window_height,
         0, 0, state->h_instance, 0);
 
@@ -182,6 +183,11 @@ f64 platform_get_absolute_time() {
 
 void platform_sleep(u64 ms) {
     Sleep(ms);
+}
+
+
+void platform_get_required_extension_names(const char ***names_darray) {
+    darray_push(*names_darray, &"VK_KHR_win32_surface");
 }
 
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {
